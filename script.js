@@ -141,36 +141,94 @@ const LearnerSubmissions = [
 //So there are multiple Objects and Arrays all nested, so I guess I need to distill everything into a managable way
 
 
-function getLearnerData(courseInfo, assignmentGroups, learnerSubmissions) {}
+// Beginning/Start
+function getLearnerData(course, ag, submissions) {}
    let newlearnerData = {} //this gotta be a new a new object and should  probaly hold  the results 
 
-   try {
-    const loggedAssignment = ag.assignments.find(assignment.id === assignmentId);
-    if (!loggedAssignment) {
-        throw new Error (`Your assignment was not found for Introduction to Javascript!.`);
-    
-    } else { newlearnerdata = loggedAssignment; 
-    
-    }
+   let dueDate
+   let pointsPossible
 
-} catch (error) {
+ submission.forEach submissions => {
+    let learnerId = submissions.learner_id;
+    let assignmentId = submissions.assignment_id;
+    let score = submissions.submission.score;
+   
+
+
+   try {
+    const loggedAssignment = ag.assignments.find(assignment.id === assignmentId);       //using helper function
+    if (!loggedAssignment) {
+        throw new Error (`Your assignment was not found in "Introduction to Javascript!".`);
+    }
+        //return loggedAssignment; // should show the logged assignment 
+
+        dueDate = new Date (loggedAssignment.due_at);
+        pointsPossible = loggedAssignment.points_possible;
+
+        //newlearnerData.dueDate = dueDate; //may revist this 
+        //newlearnerData.pointsPossible = pointsPossible; //may revist this 
+
+   // } else { newLearnerData.loggedAssignment = loggedAssignment; // Displays the logged assignment if there
+
+    // } else if (!learnerData[learnerId]) {        // I think I'll probably circle back to this 
+    //     learnerData[learnerId] = {
+    //     id: learnerId,
+    //     assignmentScores:{},
+    //     sumScore:0,
+    //     sumPointsPossible:0,
+    //     lateAssignmentPenalty:0
+    // };
+}
+    // If can't find the assignment this will show up
+ catch (error) {
     console.error(`Sorry, we don't have any record of your assignment:`);
+    return;     
 }
 
+if (dueDate > new Date()) {         // This can be a future checker
+    return;
+} else if (!learnerData[learnerId]) {        // Circled back, for when a new student/learner don't exist, the scores it should go here  
+        learnerData[learnerId] = {
+        id: learnerId,
+        assignmentScores:{},
+        sumScore:0,
+        sumPointsPossible:0,
+       lateAssignmentPenalty:0
+        };
+}
+
+//So we want to do the Math aspect of the problem to return the output as shown in the example
+learnerData[learnerId].assignmentScores= {                  //using the spread operator in this case to get the the scores possible 
+    ...learnerData[learnerId].assignmentScores,
+    [assignmentId]: score
+}
+
+learnerData[learnerId] = {
+    ...learnerData[learnerId],                               //using the spread operator in this case to cal. the total "sum" and total "possible" if late 
+    sumScore: learnerData[learnerId].sumScore + score,
+    sumPointsPossible: learnerData[learnerId].sumPointsPossible.pointsPossible
+}
+
+                    // Additionally, if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
+const submittedDate = new Date (submissions.submissions.submitted_at);
+const lateAssignmentPenalty = submittedDate > dueDate ? (score *0.10) : 0; // this should do the math for deduction if late, tired to implement ternary operator
+learnerData[learnerId].lateAssignmentPenalty += latePenalty;
 
 
+//For the weighted averages and further manipulating of data 
 
-
-//  submission.forEach submission => {
-//     let learnerId = submission.learner_id;
-//     let assignmentId = submission.assignment_id;
-//     let score = submission.submission.score;
-
+function calculateWeightedAverge(learner) {
     
-//  }
+}
+
+const result = Object.vaules(learnerData).map(learner => ({
+
+    id: learner.id,
+    avg: calcul
 
 
 
+})
 
 
 
