@@ -145,8 +145,6 @@ const LearnerSubmissions = [
 function getLearnerData(course, ag, submissions) {}
    let newlearnerData = {} //this gotta be a new a new object and should  probaly hold  the results 
 
-   let dueDate
-   let pointsPossible
 
  submission.forEach submissions => {
     let learnerId = submissions.learner_id;
@@ -185,6 +183,9 @@ function getLearnerData(course, ag, submissions) {}
     return;     
 }
 
+const dueDate = new Date(loggedAssignment.due_at)
+const pointsPossible = loggedAssignment.points_possible;
+
 if (dueDate > new Date()) {         // This can be a future checker
     return;
 } else if (!learnerData[learnerId]) {        // Circled back, for when a new student/learner don't exist, the scores it should go here  
@@ -194,7 +195,7 @@ if (dueDate > new Date()) {         // This can be a future checker
         sumScore:0,
         sumPointsPossible:0,
        lateAssignmentPenalty:0
-        };
+     };
 }
 
 //So we want to do the Math aspect of the problem to return the output as shown in the example
@@ -217,33 +218,27 @@ learnerData[learnerId].lateAssignmentPenalty += latePenalty;
 
 //For the weighted averages and further manipulating of data 
 
-function calculateWeightedAverge(learner) {
+function calculateWeightedAverage(learner) {
+    const dueAssignments = Object.entries(learner.assignmentScores).filter(([assignmentId]) => {
+        return new Date (assignments[assignmentId].dueDate) <= new Date();
+    });
+
+        const totalScore = dueAssignments.reduce((sum, [, score]) => sum + score, 0);
+        const totalPointsPossible = dueAssignments.length * pointsPossible;
     
+        return totalPointsPossible > 0 
+            ? (totalScore - learner.lateAssignmentPenalty) / (totalPointsPossible - learner.lateAssignmentPenalty)
+            : 0;
 }
-
-const result = Object.vaules(learnerData).map(learner => ({
-
-    id: learner.id,
-    avg: calcul
-
-
-
-})
-
-
-
-
-
-
-
-
-// Disregard this for now 
-// function getLearnerData(courseInfo, assignmentGroups, learnerSubmissions) {
-//     validateData(courseInfo, [assignmentGroups]);
-
-//     const results = [];
-//     const learnerData = {};
-
-// }
-//     //Maybe a for in would work here
+    
+    const result = Object.values(learnerData).map(learner => ({
+        id: learner.id,
+        avg: calculateWeightedAverage(learner).toFixed(2),
+        assignments: Object.entries(learner.assignmentScores).filter(([assignmentId]) => {
+            return new Date(assignments[assignmentId].dueDate) <= new Date();
+        })
+    }));
+    
+const newresult = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions)
+console.log(newesult)
 
