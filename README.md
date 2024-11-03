@@ -17,7 +17,7 @@ This is a very typical situation in industry, and this particular scenario has b
 
 
 
-Requirement  						                        	Weight 
+### Requirement  						                    ### Weight 
 
 Declare variables properly using let and const where appropriate. 5%
 
