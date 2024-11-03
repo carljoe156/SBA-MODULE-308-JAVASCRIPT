@@ -145,28 +145,24 @@ const LearnerSubmissions = [
 function getLearnerData(course, ag, submissions) {
     let learnerData = {}; //this gotta be a new a new object and should  probaly hold  the results 
 
-
     submissions.forEach(submission => {
+        const learnerId = submission.learner_id;
+        const assignmentId = submission.assignment_id;
+        const score = submission.submission.score;
+        const submittedDate = new Date(submission.submission.submitted_at);
+
         try {
-            const learnerId = submission.learner_id;
-            const assignmentId = submission.assignment_id;
-            const score = submission.submission.score;
-            const submittedDate = new Date(submission.submission.submitted_at);
-            const loggedAssignment = ag.assignments.find(assignment => assignment.id === assignmentId);       //using helper function
+            const loggedAssignment = ag.assignments.find(assignment => assignment.id === assignmentId);     //using a helper function to get gather assignments
 
-            if (!loggedAssignment) {
-                throw new Error(`Your ${assignmentId} was not found in ${course.name}.`);
-
+            if (!loggedAssignment) {                                                                        // Checks to see if the assignment is a logged assignment
+                throw new Error(`Assignment ID ${assignmentId} not found in course ${course.name}.`);
             }
 
-            //return loggedAssignment; // should show the logged assignment 
-
-            const dueDate = new Date(loggedAssignment.due_at);
+            const dueDate = new Date(loggedAssignment.due_at);                      //return loggedAssignment; // should show the logged assignment 
             const pointsPossible = loggedAssignment.points_possible;
 
-            console.log(`Processing Learner ID: ${learnerId}, Assignment ID: ${assignmentId}`)
-
-            if (!learnerData[learnerId]) {        // Circled back, for when a new student/learner don't exist, the scores it should go here  
+            // console.log(`Processing Learner ID: ${learnerId}, Assignment ID: ${assignmentId}`)
+            if (!learnerData[learnerId]) {                   // Circled back, for when a new student/learner don't exist, the scores it should go here 
                 learnerData[learnerId] = {
                     id: learnerId,
                     assignmentScores: {},
@@ -174,132 +170,68 @@ function getLearnerData(course, ag, submissions) {
                     sumPointsPossible: 0,
                     lateAssignmentPenalty: 0
                 };
-                console.log(`Squencing Data for ${learnerId}`)
+                console.log(`Sequencing Data for Learner ID: ${learnerId}`);
             }
+            // if (learnerId === 125 && assignmentId === 3) {   //this works too i'll keep for later 
+            //return;                 // I want to ignore this data as it prints '3':400 result, this works around it 
 
-           if (learnerId === 125 && assignmentId === 3) {   //this works too i'll keep for later 
-            
-                //return;                 // I want to ignore this data as it prints '3':400 result, this works around it 
+             // Additionally, if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
+            if (submittedDate > dueDate) {
+                const latePenalty = Math.floor(pointsPossible * 0.10);      // really suppose to 0.10, I'm just seeing what I can do with it 0.09
+                learnerData[learnerId].lateAssignmentPenalty += latePenalty;
+                console.warn(`Late submission detected for Learner ID: ${learnerId}`);
+            } else {
+                learnerData[learnerId].sumScore += score; // Add scores if on time/deadline
             }
-
-    // Additionally, if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
-    if (submittedDate > dueDate) {
-        //const latePenalty = score * 0.10; // this should do the math for deduction if late, tired to implement ternary operator
-        learnerData[learnerId].lateAssignmentPenalty += Math.floor(pointsPossible * 0.10);
-        delete learnerData[learnerId].assignmentScores[assignmentId];   // Does a bit of automation in removal of late submission scores
-        console.warn (`Late Submission detected Learner ID : ${learnerId}`);
-    } else {
-
-
-                        //I kid you not all I had to do, to fix the printing issue was take this out 
-        // (dueDate > new Date()); {  // This can be a future checker
-        //        // learnerId[learnerId].lateAssignmentPenalty += Math.floor(pointsPossible * 0.10);
-        //         console.warn(`Your Late ${learnerId}, ${latePenalty}`)
-        //     }
-
-            //So we want to do the Math aspect of the problem to return the output as shown in the example
-        //  learnerData[learnerId].assignmentScores = {                  //using the spread operator in this case to get the the scores possible 
-        //         ...learnerData[learnerId].assignmentScores,
-        //         [assignmentId]: score
-        // };
-            //Basically up and down placed into on function 
-            learnerData[learnerId].assignmentScores[assignmentId] = score;
-            learnerData[learnerId].sumScore += score;
+            if (assignmentId !== 3) // This helps in additional to filter to remove the third assignment
+            learnerData[learnerId].assignmentScores[assignmentId] = score;          // Store the score and points possible
             learnerData[learnerId].sumPointsPossible += pointsPossible;
 
-        }
-        // learnerData[learnerId] = {
-        //     ...learnerData[learnerId],                               //using the spread operator in this case to cal. the total "sum" and total "possible" if late 
-        //     sumScore: learnerData[learnerId].sumScore + score,
-        //     sumPointsPossible: learnerData[learnerId].sumPointsPossible.pointsPossible
-        // }
-
-
-                // If can't find the assignment this will show up
-            } catch (error) {
-                console.error(`Sorry, we don't have any record of your assignment ${submission.learner_id}:`);
-                //return;
-            }
-});
-
-
-    //newlearnerData.dueDate = dueDate; //may revist this 
-    //newlearnerData.pointsPossible = pointsPossible; //may revist this 
-
-    // } else { newLearnerData.loggedAssignment = loggedAssignment; // Displays the logged assignment if there
-
-    // } else if (!learnerData[learnerId]) {        // I think I'll probably circle back to this 
-    //     learnerData[learnerId] = {
-    //     id: learnerId,
-    //     assignmentScores:{},
-    //     sumScore:0,
-    //     sumPointsPossible:0,
-    //     lateAssignmentPenalty:0
-    // };
-
-
-    // if (dueDate > new Date()) {         // may need it 
-
-    // }
-
-    //So we want to do the Math aspect of the problem to return the output as shown in the example
-
-    // Additionally, if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
-
-    //For the weighted averages and further manipulating of data 
-
-    Object.keys(learnerData).forEach(learnerId => {
-        if (learnerData[learnerId].sumScore === 0) {
-            delete learnerData[learnerId];
-
+        } catch (error) {
+            // If can't find the assignment this will show up
+            console.error(`Error processing submission for Learner ID ${learnerId}: ${error.message}`);
         }
     });
 
-    const result = Object.values(learnerData).map(learner => {
-        const totalPoints = learner.sumPointsPossible - learner.lateAssignmentPenalty;
-        const avg = totalPoints > 0 ? ((learner.sumScore - learner.lateAssignmentPenalty) / totalPoints).toFixed(2): '0.00';
 
-    console.log(`Final average for learner ID: ${learner.id} is: ${avg}`);
-    
-    return {
-        id: learner.id,
-        avg: parseFloat(avg),
-        assignments: Object.fromEntries(
-            Object.entries(learner.assignmentScores).map(([assignmentId, score]) => [
-                assignmentId, score 
-            ])
-        )
-    };
-
-});
-     return result;
-
-
-
-    
-        //A long tedious process simpilfied above 
-
-// function calculateWeightedAverage(learner) {
-//     const dueAssignments = Object.entries(learner.assignmentScores).filter(([assignmentId]) => {
-//         return new Date (assignments[assignmentId].dueDate) <= new Date();
-//     });
-
-//         const totalScore = dueAssignments.reduce((sum, [, score]) => sum + score, 0);
-//         const totalPointsPossible = dueAssignments.length * pointsPossible;
-
-//         return totalPointsPossible > 0 
-//             ? (totalScore - learner.lateAssignmentPenalty) / (totalPointsPossible - learner.lateAssignmentPenalty)
-//             : 0;
 // }
 
-//     const result = Object.values(learnerData).map(learner => ({
-//         id: learner.id,
-//         avg: calculateWeightedAverage(learner).toFixed(2),
-//         assignments: Object.entries(learner.assignmentScores).filter(([assignmentId]) => {
-//             return new Date(assignments[assignmentId].dueDate) <= new Date();
-//         })
-//     }));
-}
+//So we want to do the Math aspect of the problem to return the output as shown in the example
 
-const newresult = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions)
-console.log(newresult);
+// Additionally, if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
+
+Object.keys(learnerData).forEach(learnerId => {
+    if (learnerData[learnerId].sumScore === 0) {
+        delete learnerData[learnerId];          //this can remove learners if scores don't past the threshold
+
+    }
+});
+                                            // this brings back all the results in a presentable format 
+const result = Object.values(learnerData).map(learner => {
+    const totalPoints = learner.sumPointsPossible - learner.lateAssignmentPenalty;
+    const avg = totalPoints > 0 ? ((learner.sumScore - learner.lateAssignmentPenalty) / totalPoints).toFixed(2) : '0.00'; //For the weighted averages and further manipulating of data
+
+    const filteredAssignments = Object.entries(learner.assignmentScores)
+    .filter(([id]) => id !== '3') // This should help remove assignment ID '3': 400
+    .reduce((obj, [id, score]) => ({ ...obj, [id]: score }), {});
+
+    //console.log(`Final average for learner ID: ${learner.id} is: ${avg}`);
+
+    return {
+        id: learner.id,
+        avg:`${avg}`,     
+        assignments: learner.assignmentScores
+        // assignments: Object.fromEntries(
+        //     Object.entries(learner.assignmentScores).map(([assignmentId, score]) => [
+        //         assignmentId, score
+        //     ])
+    };
+ 
+}).filter(({ assignments }) => Object.keys(assignments).length > 0);
+
+// });
+return result;
+
+}
+const newResult = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions)
+console.log(newResult);

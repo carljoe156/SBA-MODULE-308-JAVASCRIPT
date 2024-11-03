@@ -1,4 +1,11 @@
-# SBA-MODULE-308-JAVASCRIPT RENAMED to SCRIPT.JS
+# SCRIPT.JS FORMALLY KNOWN AS SBA-MODULE-308-JAVASCRIPT 
+*Originally submitted 11:56pm 2024-11-02 -In keeping with Submission Deadlines*
+*Corrected Problems/Issues 12:35am 2024-11-03*
+## How This Script works 
+<P> 
+This program processes learner submission data for a course by calculating average scores and filtering out specific assignments. It takes course information details, assignment group details, and learner submissions details as input, checks for late submissions, applies penalties, and accumulates scores. By excluding a specific assignment (ID 3), it computes each learner's average score based on the remaining submissions and presents the results in a structured format that includes learner IDs, average scores, and scores for the included assignments. </P>
+
+
 ## Objectives
 • Employ basic JavaScript syntax accurately.
 • Implement control flow structures such as conditionals and loops effectively.
@@ -17,7 +24,7 @@ This is a very typical situation in industry, and this particular scenario has b
 
 
 
-### Requirement  						                    ### Weight 
+### Requirement  						                        Weight 
 
 Declare variables properly using let and const where appropriate. 5%
 
@@ -61,6 +68,6 @@ Commit frequently to the git repository.				5%
 Include a README file that contains a description of your application.	 2%
 
 
-
 ## Problem/Issues
-The Output: Printing averages and assignments for each id !!!!
+The Output: Printing averages and assignments for each id !!!! 
+Solved!!!![✓], Re-did the math aspect to get the corresponding output result.
