@@ -62,3 +62,5 @@ Include a README file that contains a description of your application.	 2%
 
 
 
+## Problem/Issues
+The Output: Printing averages and assignments for each id !!!!
